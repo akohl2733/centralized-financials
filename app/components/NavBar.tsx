@@ -7,7 +7,7 @@ export default function NavBar(){
                 Central Financials
             </div>
                 <ul className={styles.navList}>
-                    <li>Financial</li>
+                    <li><a href="../financials">Financials</a></li>
                     <li>Stocks</li>
                     <li>Bank Accounts</li>
                 </ul>

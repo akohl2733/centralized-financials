@@ -6,6 +6,7 @@
     overflow: hidden;
     margin-top: 50px;
     padding: 50px;
+    border-radius: 20px;
 }
 
 .title {
@@ -22,4 +23,12 @@
     display: inline-flex;
     gap: 50px;
     margin-right: 150px;
+}
+
+.MainChart {
+    font-size: 18px;;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    margin-top: 25px;
 }
