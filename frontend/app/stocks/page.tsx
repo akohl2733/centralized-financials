@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from "react";
+import styles from "./styles.module.css";
 import axios from "axios";
+import StockForm from "../components/StockForm";
 
 
 export default function StockPage() {
@@ -18,10 +20,14 @@ export default function StockPage() {
         .catch((err) => console.error("Fetch error:", err));
     }, []);
 
+
     return (
-        <>
-            <div>This page is working properly</div>
-            <div>{daily}</div>
-        </>
+        <div className={styles.container}>
+            <div>Enter Ticker and Amount</div>
+            <div className={styles.InputFields}>
+                <StockForm />
+            </div>
+            <div>${daily}</div>
+        </div>
     );
 }
