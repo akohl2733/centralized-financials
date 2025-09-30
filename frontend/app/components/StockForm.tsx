@@ -1,48 +1,62 @@
 'use client';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 
 export default function StockForm() {
-    function handleSubmit(e: any) {
-        const [daily, setDaily] = useState(0);
-        e.preventDefault();
+    const [daily, setDaily] = useState<number | null>(null);
+    const [result, setResult] = useState<string | null>(null);
+     
 
-        const form = e.target;
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        console.log("This is from the form", e);
+
+        const form = e.currentTarget;
         const formData = new FormData(form);
 
-        const formJSON = Object.fromEntries(formData.entries());
-        console.log(formJSON);
+        const ticker = (formData.get("ticker") as string).toUpperCase();
+        const amount = Number(formData.get('amount'));;
+        
 
-        const amount = +formJSON.amount;
+        try {
+            const res = await fetch(`http://localhost:5000/api/stock/${ticker}`)
+            const data = await res.json();
+            console.log(data);
 
-        useEffect(() => {
-        fetch(`http://localhost:5000/api/stock/VOO`)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data)
-                const close = (data["Time Series (Daily)"]["2025-09-26"]["4. close"]);
-                console.log(close);
-                setDaily(close);
-            })
-            .catch((err) => console.error("Fetch error:", err));
-        }, []);
+            const entries = Object.entries(data["Time Series (Daily)"]);
+            const [ date, values ] = entries[0];
+            const close = Number((values as { [key: string]: string})["4. close"]);
 
-        const result = daily * amount;
+            console.log("Close price", close);
 
-        return (
-            <div>
-                {daily}
-            </div>
-        )
+            setDaily(close);
+
+            const totalPrice = (close * amount).toFixed(2);
+            const stringifiedTotalPrice = "$" + totalPrice.toString();
+            setResult(stringifiedTotalPrice);
+        } catch (err) {
+            console.error("Fetch error: ", err);
+        }
     }
 
     return (
         <div className={styles.FormFields}>
             <form method="post" onSubmit={handleSubmit}>
-                <input className={styles.InputBox} name="ticker" defaultValue='Stock/ETF Ticker'></input>
-                <input className={styles.InputBox} name="amount" defaultValue='Please enter amount of shares'></input>
-                <button className={styles.SubmitButton} type="submit">Submit Amount</button>
+                <input 
+                    className={styles.InputBox} 
+                    name="ticker" 
+                    placeholder='Stock/ETF Ticker'>
+                </input>
+                <input 
+                    className={styles.InputBox} 
+                    name="amount" 
+                    placeholder='Please enter amount of shares'>
+                </input>
+                <button className={styles.SubmitButton} type="submit">
+                    Submit Amount
+                </button>
             </form>
+            <div>{result}</div>
         </div>
         
     )
